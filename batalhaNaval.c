@@ -1,8 +1,10 @@
 #include <stdio.h>
-
+#include <stdlib.h>
 // Desafio Batalha Naval - MateCheck
 // Este código inicial serve como base para o desenvolvimento do sistema de Batalha Naval.
 // Siga os comentários para implementar cada parte do desafio.
+#define TAM 10   // tamanho do tabuleiro 10x10
+#define H 5      // tamanho das matrizes de habilidades
 
 int main() {
     // Nível Novato - Posicionamento dos Navios
@@ -35,6 +37,87 @@ int main() {
     // 0 0 1 0 0
     // 1 1 1 1 1
     // 0 0 1 0 0
+ 
+    int tabuleiro[TAM][TAM];
+
+    // Preenche o tabuleiro com 0 (água)
+    for (int i = 0; i < TAM; i++)
+        for (int j = 0; j < TAM; j++)
+            tabuleiro[i][j] = 0;
+
+    // Coloca um navio horizontal de tamanho 3
+    int linha_navio = 3;
+    int coluna_navio = 4;
+
+    for (int i = 0; i < 3; i++)
+        tabuleiro[linha_navio][coluna_navio + i] = 3;
+
+    // Matrizes das habilidades
+    int cone[H][H];
+    int cruz[H][H];
+    int octa[H][H];
+
+    // Cone – forma triangulada para baixo
+    for (int i = 0; i < H; i++)
+        for (int j = 0; j < H; j++)
+            cone[i][j] = (j >= H/2 - i && j <= H/2 + i) ? 1 : 0;
+
+    // Cruz – linhas central horizontal e vertical
+    for (int i = 0; i < H; i++)
+        for (int j = 0; j < H; j++)
+            cruz[i][j] = (i == H/2 || j == H/2) ? 1 : 0;
+
+    // Octaedro – formato de losango
+    for (int i = 0; i < H; i++)
+        for (int j = 0; j < H; j++)
+            octa[i][j] = (abs(H/2 - i) + abs(H/2 - j) <= H/2) ? 1 : 0;
+
+    // Coordenadas das habilidades no tabuleiro
+    int oc_l = 1, oc_c = 1;
+    int cr_l = 5, cr_c = 5;
+    int ot_l = 7, ot_c = 2;
+
+    // Aplica o cone no tabuleiro
+    for (int i = 0; i < H; i++)
+        for (int j = 0; j < H; j++)
+            if (cone[i][j] == 1) {
+                int x = oc_l + i;
+                int y = oc_c + j;
+                if (x < TAM && y < TAM && tabuleiro[x][y] == 0)
+                    tabuleiro[x][y] = 5; // 5 = área da habilidade
+            }
+
+    // Aplica a cruz
+    for (int i = 0; i < H; i++)
+        for (int j = 0; j < H; j++)
+            if (cruz[i][j] == 1) {
+                int x = cr_l + i - H/2;
+                int y = cr_c + j - H/2;
+                if (x >= 0 && y >= 0 && x < TAM && y < TAM && tabuleiro[x][y] == 0)
+                    tabuleiro[x][y] = 5;
+            }
+
+    // Aplica o octaedro
+    for (int i = 0; i < H; i++)
+        for (int j = 0; j < H; j++)
+            if (octa[i][j] == 1) {
+                int x = ot_l + i - H/2;
+                int y = ot_c + j - H/2;
+                if (x >= 0 && y >= 0 && x < TAM && y < TAM && tabuleiro[x][y] == 0)
+                    tabuleiro[x][y] = 5;
+            }
+
+    // Imprime o tabuleiro
+    for (int i = 0; i < TAM; i++) {
+        for (int j = 0; j < TAM; j++) {
+            if (tabuleiro[i][j] == 0) printf(" 0 ");   // água
+            else if (tabuleiro[i][j] == 3) printf(" 3 "); // navio
+            else if (tabuleiro[i][j] == 5) printf(" 5 "); // habilidade
+        }
+        printf("\n");
+    }
 
     return 0;
 }
+
+
